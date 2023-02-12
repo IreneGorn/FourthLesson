@@ -19,13 +19,17 @@ public class Handgun : MonoBehaviour
 
                 Instantiate(impactPrefab, hit.point, Quaternion.LookRotation(hit.normal, Vector3.up));
 
-                var rigidbody = hit.transform.GetComponent<Rigidbody>();
-                if (rigidbody == null)
+                var destructible = hit.transform.GetComponent<DestructibleObject>();
+                if (destructible != null)
                 {
-                    //hit.transform.gameObject.SetActive(false);
-                    return;
+                    destructible.ReceiveDamage();
                 }
-                rigidbody.AddForce(shootPoint.forward * force, ForceMode.Impulse);
+                
+                var rigidbody = hit.transform.GetComponent<Rigidbody>();
+                if (rigidbody != null)
+                {
+                    rigidbody.AddForce(shootPoint.forward * force, ForceMode.Impulse);
+                }
             }
         }
     }
