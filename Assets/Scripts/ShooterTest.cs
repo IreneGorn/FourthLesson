@@ -17,7 +17,7 @@ public class ShooterTest : MonoBehaviour
                 var rigidbody = hit.transform.GetComponent<Rigidbody>();
                 if (rigidbody == null)
                 {
-                    hit.transform.gameObject.SetActive(false);
+                    //hit.transform.gameObject.SetActive(false);
                     return;
                 }
                 rigidbody.AddForce(transform.forward * force, ForceMode.Impulse);
