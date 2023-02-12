@@ -1326,6 +1326,11 @@ LightProbeGroup:
   - {x: 7.1518564, y: 2.7763042, z: -11.2319765}
   - {x: 8.993203, y: 2.3566551, z: -8.796325}
   m_Dering: 1
+--- !u!1 &915053566 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4671772661074735572, guid: 00b0b8823e83f534b862add7f4d289c4, type: 3}
+  m_PrefabInstance: {fileID: 434089911}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &919974558
 GameObject:
   m_ObjectHideFlags: 0
@@ -1832,7 +1837,7 @@ GameObject:
   - component: {fileID: 1538973582}
   - component: {fileID: 1538973581}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Crosshair
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2016,8 +2021,42 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4368850531273531553, guid: 3ed96c799f682144987fb236a203c839, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 3ed96c799f682144987fb236a203c839, type: 3}
+--- !u!1 &1938686741 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9005220659476430823, guid: 2d3a85ecde41a8246a79669975912b74, type: 3}
+  m_PrefabInstance: {fileID: 60889539378096550}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1938686745
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1938686741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61601aeda81cedf43b2118200aa16f92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  throwForce: 20
+  grenadePrefab: {fileID: 1678607578693416332, guid: 79d96b72950f4e4429bf2626764ccd98, type: 3}
+--- !u!114 &1938686746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1938686741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53bf6bfe79a1d7b4388b84ce5ec68c24, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handgun: {fileID: 915053566}
+  autoRifle: {fileID: 1981236044}
 --- !u!1001 &1979352518
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2131,6 +2170,11 @@ PrefabInstance:
       objectReference: {fileID: 2006620068}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2f7f3dde7ae722a4aafffe20691ad702, type: 3}
+--- !u!1 &1981236044 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2338369281814877629, guid: 3ed96c799f682144987fb236a203c839, type: 3}
+  m_PrefabInstance: {fileID: 1858647940}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &2006620068 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8616685848737228376, guid: c5efc39a8aaf6e64ea40e9ad573e9b47, type: 3}
