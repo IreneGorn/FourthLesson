@@ -3,9 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Handgun : MonoBehaviour
+public class Weapon : MonoBehaviour
 {
     [SerializeField] private float force = 4f;
+    [SerializeField] private float damage = 1f;
     [SerializeField] private GameObject impactPrefab;
     [SerializeField] private Transform shootPoint;
 
@@ -22,7 +23,7 @@ public class Handgun : MonoBehaviour
                 var destructible = hit.transform.GetComponent<DestructibleObject>();
                 if (destructible != null)
                 {
-                    destructible.ReceiveDamage();
+                    destructible.ReceiveDamage(damage);
                 }
                 
                 var rigidbody = hit.transform.GetComponent<Rigidbody>();
