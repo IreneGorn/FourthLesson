@@ -10,13 +10,13 @@ public class GrenadeThrower : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha3))
+        if (Input.GetMouseButtonDown(0))
         {
             ThrowGrenade();
         }
     }
 
-    void ThrowGrenade()
+    private void ThrowGrenade()
     {
         GameObject grenade = Instantiate(grenadePrefab, transform.position, transform.rotation);
         Rigidbody rb = grenade.GetComponent<Rigidbody>();
