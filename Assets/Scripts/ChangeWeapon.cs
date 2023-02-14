@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class ChangeWeapon : MonoBehaviour
 {
-    [SerializeField] private GameObject handgun;
-    [SerializeField] private GameObject autoRifle;
     [SerializeField] private GameObject[] weapons;
     void Update()
     {
@@ -27,7 +25,7 @@ public class ChangeWeapon : MonoBehaviour
 
     private void SetWeapon(int weaponNumber)
     {
-        for (int i = 1; i < weapons.Length; i++)
+        for (int i = 0; i < weapons.Length; i++)
         {
             bool correctWeapon = (i == weaponNumber);
             // то же, что и i == weaponNumber;
