@@ -4,65 +4,65 @@ using UnityEngine;
 
 public class Hero : MonoBehaviour
 {
-    static public Hero S; // Одиночка
+    static public Hero S; // РћРґРёРЅРѕС‡РєР°
 
     [Header("Set in Inspector")]
-    // Поля, управляющие движением корабля
+    // РџРѕР»СЏ, СѓРїСЂР°РІР»СЏСЋС‰РёРµ РґРІРёР¶РµРЅРёРµРј РєРѕСЂР°Р±Р»СЏ
     public float speed = 30;
     public float rollMult = -45;
     public float pitchMult = 30;
-    public float gameRestartDelay = 2f; // время ожидания перезапуска игры после разрушения корабля
+    public float gameRestartDelay = 2f; // РІСЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РїРµСЂРµР·Р°РїСѓСЃРєР° РёРіСЂС‹ РїРѕСЃР»Рµ СЂР°Р·СЂСѓС€РµРЅРёСЏ РєРѕСЂР°Р±Р»СЏ
     public GameObject projectilePrefab;
     public float projectileSpeed = 40;
-    public Weapon[] weapons;
+    public WeaponForShip[] weapons;
 
     [Header("Set Dynamically")]
     [SerializeField]
     private float _shieldLevel = 1;
 
-    // Эта переменная хранит ссылку на последний столкнувшийся игровой объект
+    // Р­С‚Р° РїРµСЂРµРјРµРЅРЅР°СЏ С…СЂР°РЅРёС‚ СЃСЃС‹Р»РєСѓ РЅР° РїРѕСЃР»РµРґРЅРёР№ СЃС‚РѕР»РєРЅСѓРІС€РёР№СЃСЏ РёРіСЂРѕРІРѕР№ РѕР±СЉРµРєС‚
     private GameObject lastTriggerGo = null;
 
-    // Объявление нового делегата типа WeaponFireDelegate
+    // РћР±СЉСЏРІР»РµРЅРёРµ РЅРѕРІРѕРіРѕ РґРµР»РµРіР°С‚Р° С‚РёРїР° WeaponFireDelegate
     public delegate void WeaponFireDelegate();
-    // Создать поле типа WeaponFireDelegate с именем fireDelegate.
+    // РЎРѕР·РґР°С‚СЊ РїРѕР»Рµ С‚РёРїР° WeaponFireDelegate СЃ РёРјРµРЅРµРј fireDelegate.
     public WeaponFireDelegate fireDelegate;
 
     void Start()
     {
-        S = this; // Установить ссылку на объект-одиночку 
+        S = this; // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЃСЃС‹Р»РєСѓ РЅР° РѕР±СЉРµРєС‚-РѕРґРёРЅРѕС‡РєСѓ 
         //fireDelegate += TempFire;
 
-        // Очистить массив weapons и начать игру с 1 бластером
+        // РћС‡РёСЃС‚РёС‚СЊ РјР°СЃСЃРёРІ weapons Рё РЅР°С‡Р°С‚СЊ РёРіСЂСѓ СЃ 1 Р±Р»Р°СЃС‚РµСЂРѕРј
         ClearWeapon();
         weapons[0].SetType(WeaponType.blaster);
     }
 
     void Update()
     {
-        // Извлечь информацию из класса Input
+        // РР·РІР»РµС‡СЊ РёРЅС„РѕСЂРјР°С†РёСЋ РёР· РєР»Р°СЃСЃР° Input
         float xAxis = Input.GetAxis("Horizontal");
         float yAxis = Input.GetAxis("Vertical");
 
-        // Изменить transform.position, опираясь на информацию по осям
+        // РР·РјРµРЅРёС‚СЊ transform.position, РѕРїРёСЂР°СЏСЃСЊ РЅР° РёРЅС„РѕСЂРјР°С†РёСЋ РїРѕ РѕСЃСЏРј
         Vector3 pos = transform.position;
         pos.x += xAxis * speed * Time.deltaTime;
         pos.y += yAxis * speed * Time.deltaTime;
         transform.position = pos;
 
-        // Повернуть корабль, чтобы придать ощущение динамизма
+        // РџРѕРІРµСЂРЅСѓС‚СЊ РєРѕСЂР°Р±Р»СЊ, С‡С‚РѕР±С‹ РїСЂРёРґР°С‚СЊ РѕС‰СѓС‰РµРЅРёРµ РґРёРЅР°РјРёР·РјР°
         transform.rotation = Quaternion.Euler(yAxis * pitchMult, xAxis * rollMult, 0);
 
-        // Позволить кораблю выстрелить
+        // РџРѕР·РІРѕР»РёС‚СЊ РєРѕСЂР°Р±Р»СЋ РІС‹СЃС‚СЂРµР»РёС‚СЊ
         //if (Input.GetKeyDown(KeyCode.Space))
         //{
         //    TempFire();
         //}
 
-        // Произвести выстрел из всех видов оружия вызовом fireDelegate
-        // Сначала проверить нажатие клавиши: Axis("Jump")
-        // Затем убедиться, что значение fireDelegate не равно null,
-        //чтобы избежать ошибки
+        // РџСЂРѕРёР·РІРµСЃС‚Рё РІС‹СЃС‚СЂРµР» РёР· РІСЃРµС… РІРёРґРѕРІ РѕСЂСѓР¶РёСЏ РІС‹Р·РѕРІРѕРј fireDelegate
+        // РЎРЅР°С‡Р°Р»Р° РїСЂРѕРІРµСЂРёС‚СЊ РЅР°Р¶Р°С‚РёРµ РєР»Р°РІРёС€Рё: Axis("Jump")
+        // Р—Р°С‚РµРј СѓР±РµРґРёС‚СЊСЃСЏ, С‡С‚Рѕ Р·РЅР°С‡РµРЅРёРµ fireDelegate РЅРµ СЂР°РІРЅРѕ null,
+        //С‡С‚РѕР±С‹ РёР·Р±РµР¶Р°С‚СЊ РѕС€РёР±РєРё
         if(Input.GetAxis("Jump") == 1 && fireDelegate != null)
         {
             fireDelegate();
@@ -87,21 +87,21 @@ public class Hero : MonoBehaviour
         GameObject go = rootT.gameObject;
         //print("Triggered: " + go.name);
 
-        // Гарантировать невозможность повторного столкновения с тем же объектом
+        // Р“Р°СЂР°РЅС‚РёСЂРѕРІР°С‚СЊ РЅРµРІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РїРѕРІС‚РѕСЂРЅРѕРіРѕ СЃС‚РѕР»РєРЅРѕРІРµРЅРёСЏ СЃ С‚РµРј Р¶Рµ РѕР±СЉРµРєС‚РѕРј
         if (go == lastTriggerGo)
         {
             return;
         }
         lastTriggerGo = go;
 
-        if (go.tag == "Enemy") // Если защитное поле столкнулось с вражеским кораблём...
+        if (go.tag == "Enemy") // Р•СЃР»Рё Р·Р°С‰РёС‚РЅРѕРµ РїРѕР»Рµ СЃС‚РѕР»РєРЅСѓР»РѕСЃСЊ СЃ РІСЂР°Р¶РµСЃРєРёРј РєРѕСЂР°Р±Р»С‘Рј...
         {
-            shieldLevel--; // Уменьшить уровень защиты на 1
-            Destroy(go); // ... и уничтожить врага
+            shieldLevel--; // РЈРјРµРЅСЊС€РёС‚СЊ СѓСЂРѕРІРµРЅСЊ Р·Р°С‰РёС‚С‹ РЅР° 1
+            Destroy(go); // ... Рё СѓРЅРёС‡С‚РѕР¶РёС‚СЊ РІСЂР°РіР°
         }
         else if (go.tag == "PowerUp")
         {
-            // Если защитное поле столкнулось с бонусом
+            // Р•СЃР»Рё Р·Р°С‰РёС‚РЅРѕРµ РїРѕР»Рµ СЃС‚РѕР»РєРЅСѓР»РѕСЃСЊ СЃ Р±РѕРЅСѓСЃРѕРј
             AbsorbPower(go);
         }
         else
@@ -120,16 +120,16 @@ public class Hero : MonoBehaviour
                 break;
 
             default:
-                if (pu.type == weapons[0].type) // Если оружие того же типа
+                if (pu.type == weapons[0].type) // Р•СЃР»Рё РѕСЂСѓР¶РёРµ С‚РѕРіРѕ Р¶Рµ С‚РёРїР°
                 {
-                    Weapon w = GetEmptyWeaponSlot();
+                    WeaponForShip w = GetEmptyWeaponSlot();
                     if (w != null)
                     {
-                        // Установить в pu.type
+                        // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РІ pu.type
                         w.SetType(pu.type);
                     }
                 }
-                else // Если оружие другого типа
+                else // Р•СЃР»Рё РѕСЂСѓР¶РёРµ РґСЂСѓРіРѕРіРѕ С‚РёРїР°
                 {
                     ClearWeapon();
                     weapons[0].SetType(pu.type);
@@ -151,13 +151,13 @@ public class Hero : MonoBehaviour
             if(value < 0)
             {
                 Destroy(this.gameObject);
-                // Сообщить объекту Main.S о необходимости перезапустить игру
+                // РЎРѕРѕР±С‰РёС‚СЊ РѕР±СЉРµРєС‚Сѓ Main.S Рѕ РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё РїРµСЂРµР·Р°РїСѓСЃС‚РёС‚СЊ РёРіСЂСѓ
                 Main.S.DelayedRestart(gameRestartDelay);
             }
         }
     }
 
-    Weapon GetEmptyWeaponSlot()
+    WeaponForShip GetEmptyWeaponSlot()
     {
         for(int i = 1; i < weapons.Length; i++)
         {
@@ -171,7 +171,7 @@ public class Hero : MonoBehaviour
 
     void ClearWeapon()
     {
-        foreach(Weapon w in weapons)
+        foreach(WeaponForShip w in weapons)
         {
             w.SetType(WeaponType.none);
         }

@@ -2,149 +2,72 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Это перечесление всех возможных типов оружия.
-/// Также включает тип "shield", чтобы дать возможность совершенствовать защиту.
-/// </summary>
-public enum WeaponType
+public class Weapon : MonoBehaviour
 {
-    none,    // По умолчанию / нет оружия
-    blaster, // Простой бластер
-    spread,  // Веерная пушка, стреляющая несколькими снарядами
-    phaser,  // [HP] Волновой фазер
-    missile, // [HP] Самонаводящиеся ракеты
-    laser,   // [HP] Наносит повреждения при долговременном воздействии
-    shield   // Увеличивает shieldLevel
-}
+    // [SerializeField] - РіРѕРІРѕСЂРёС‚ Рѕ С‚РѕРј, С‡С‚Рѕ РїРµСЂРµРјРµРЅРЅСѓСЋ РјРѕР¶РЅРѕ СЂРµРґР°С‡РёС‚СЊ РІ СЋРЅРёС‚Рё
+        [SerializeField] private float force = 4; // СЃРёР»Р° РІС‹СЃС‚СЂРµР»Р°
+        [SerializeField] private float damage = 1; // СѓСЂРѕРЅ РѕС‚ РІС‹СЃС‚СЂРµР»Р°
+        [SerializeField] private GameObject impactPrefab; // РїСЂРµС„Р°Р± СЌС„С„РµРєС‚Р° РїРѕРїР°РґР°РЅРёСЏ
+        [SerializeField] private Transform shootPoint; // С‚РѕС‡РєР°, РѕС‚СѓРґР° РёРґРµС‚ РІС‹СЃС‚СЂРµР»
+        [SerializeField] private float spreadConfig = 0.1f;
 
-/// <summary>
-/// Класс WeaponDefinition позволяет настраивать свойства
-/// конкретного вида оружия в инспекторе. ДЛя этого класс Main
-/// будет хранить массив элементов типа WeaponDefinition.
-/// </summary>
-[System.Serializable]
-public class WeaponDefinition
-{
-    public WeaponType type = WeaponType.none;
-    public string letter; // Буква на кубике, изображающем бонус
-    public Color color = Color.white; // Цвет ствола оружия и кубика бонуса
-    public GameObject projectilePrefab; // Шаблон снарядов
-    public Color projectileColor = Color.white;
-    public float damageOnHit = 0; // Разрушительная мощьность
-    public float continuousDamage = 0; // Степень разрушения в секунду (для Laser)
-    public float delayBetweenShots = 0;
-    public float velocity = 20; // Скорость полета снарядов
-}
-
-public class Weapon: MonoBehaviour
-{
-    static public Transform PROJECTILE_ANCHOR;
-
-    [Header("Set Dynamically")]
-    [SerializeField]
-    private WeaponType _type = WeaponType.none;
-    public WeaponDefinition def;
-    public GameObject collar;
-    public float lastShotTime; // Время последнего выстрела
-    private Renderer collarRend;
-
-    void Start()
-    {
-        collar = transform.Find("Collar").gameObject;
-        collarRend = collar.GetComponent<Renderer>();
-
-        // Вызвать SetType(), чтобы заменитьтип оружия по умолчанию
-        SetType(_type);
-        // Динамически создать точку привязки для всех снарядов
-        if(PROJECTILE_ANCHOR == null)
+        // РЎС‚Р°РЅРґР°СЂС‚РЅС‹Р№ СЋРЅРёС‚Рё РјРµС‚РѕРґ Update - РІС‹Р·С‹РІР°РµС‚СЃСЏ РєР°Р¶РґС‹Р№ РєР°РґСЂ
+        private void Update()
         {
-            GameObject go = new GameObject("_ProjectileAnchor");
-            PROJECTILE_ANCHOR = go.transform;
-        }
-        // Найти fireDelegate в корневом игровом объекте
-        GameObject rootGO = transform.root.gameObject;
-        if(rootGO.GetComponent<Hero>() != null)
-        {
-            rootGO.GetComponent<Hero>().fireDelegate += Fire;
-        }
-    }
+            // Р•СЃР»Рё РЅР°Р¶РёРјР°РµРј Р»РµРІСѓСЋ(0) РєРЅРѕРїРєСѓ РјС‹С€Рё
+            if (Input.GetMouseButtonDown(0))
+            {
+                var randomX = Random.Range(-spreadConfig / 2, spreadConfig / 2);
+                var randomY = Random.Range(-spreadConfig / 2, spreadConfig / 2);
+                var spread = new Vector3(randomX, randomY, 0f);
+                Vector3 direction = shootPoint.forward + spread;
+                
+                // Р’С‹РїСѓСЃРєР°РµРј С„РёР·РёС‡РµСЃРєРёР№ Р»СѓС‡ (Raycast)
+                if (Physics.Raycast(shootPoint.position, direction, out var hit))
+                {
+                    // Р’С‹РІРѕРґРёРј РЅР°Р·РІР°РЅРёРµ РѕР±СЉРµРєС‚Р° РєСѓРґР° РїРѕРїР°Р»Рё
+                    print(hit.transform.gameObject.name);
 
-    public WeaponType type
-    {
-        get { return _type; }
-        set { SetType(value); }
-    }
+                    // РЎРѕР·РґР°С‘Рј РїСЂРµС„Р°Р± СЌС„С„РµРєС‚Р° РїРѕРїР°РґР°РЅРёСЏ
+                    var impactEffect = Instantiate(impactPrefab, hit.point, Quaternion.LookRotation(hit.normal, Vector3.up));
+                    Destroy(impactEffect, 0.5f);
+                    
+                    // РџС‹С‚Р°РµРјСЃСЏ РїРѕР»СѓС‡РёС‚СЊ РёР· РѕР±СЉРµРєС‚Р°, РєСѓРґР° РїРѕРїР°Р»Рё DestructibleObject
+                    var destructible = hit.transform.GetComponent<DestructibleObject>();
+                    // РµСЃР»Рё DestructibleObject РµСЃС‚СЊ С‚Рѕ
+                    if (destructible != null)
+                    {
+                        // РќР°РЅРµСЃС‚Рё СѓСЂРѕРЅ
+                        destructible.ReceiveDamage(damage);
+                    }
+                    
+                    // РџС‹С‚Р°РµРјСЃСЏ РїРѕР»СѓС‡РёС‚СЊ РёР· РѕР±СЉРµРєС‚Р°, РєСѓРґР° РїРѕРїР°Р»Рё Rigidbody
+                    var rigidbody = hit.transform.GetComponent<Rigidbody>();
+                    // РµСЃР»Рё Rigidbody РµСЃС‚СЊ С‚Рѕ
+                    if (rigidbody != null)
+                    {
+                        // Р”РѕР±Р°РІРёС‚СЊ РѕС‚Р±СЂР°СЃС‹РІР°РЅРёРµ
+                        // РІС‹Р·С‹РІР°РµРј AddForce, РІ РєРѕС‚РѕСЂС‹Р№ РЅСѓР¶РЅРѕ РїРµСЂРµРґР°С‚СЊ
+                        // 1) РЅР°РїСЂР°РІР»РµРЅРёРµ СЃРёР»С‹: shootPoint.forward (РєСѓРґР° СЃРјРѕС‚СЂРёС‚ РЅР°С€Рµ РѕСЂСѓР¶РёРµ)
+                        // СѓРјРЅРѕР¶РµРЅРЅРѕРµ РЅР° force (СЃРёР»Сѓ)
+                        // 2) ForceMode.Impulse - РіРѕРІРѕСЂРёС‚ Рѕ С‚РѕРј, С‡С‚Рѕ РјС‹ СѓС‡РёС‚С‹РІР°РµРј РІРµСЃ РѕР±СЉРµРєС‚Р°, Рє
+                        // РєРѕС‚РѕСЂРѕРјСѓ РґРѕР±Р°РІР»СЏРµРј СЃРёР»Сѓ
+                        rigidbody.AddForce(shootPoint.forward * force, ForceMode.Impulse);
+                    }
+                }
+            }
+        }
 
-    public void SetType(WeaponType wt)
-    {
-        _type = wt;
-        if(type == WeaponType.none)
+        // Р®РЅРёС‚Рё РјРµС‚РѕРґ, РєРѕС‚РѕСЂС‹Р№ СЂРёСЃСѓРµС‚ РіСЂР°С„РёРєСѓ РґР»СЏ СЂРµРґР°РєС‚РѕСЂР°
+        // РІ РЅС‘Рј РјРѕР¶РЅРѕ РѕР±СЂР°С‰Р°С‚СЊСЃСЏ Рє РєР»Р°СЃСЃСѓ Gizmos
+        // РўР°Рє Р¶Рµ РІС‹Р·РІР°РµС‚СЃСЏ РЅР° РєР°Р¶РґРѕРј РєР°РґСЂРµ, РґР°Р¶Рµ РєРѕРіРґР° РёРіСЂР° РЅРµ Р·Р°РїСѓС‰РµРЅР°
+        private void OnDrawGizmos()
         {
-            this.gameObject.SetActive(false);
-            return;
+            // Р’С‹СЃС‚Р°РІР»СЏРµРј РєСЂР°СЃРЅС‹Р№ С†РІРµС‚
+            Gizmos.color = Color.red;
+            
+            // Р РёСЃСѓРµРј Р»СѓС‡, РёРґСѓС‰РёР№ РёР· РїРѕР·РёС†РёРё РЅР°С€РµРіРѕ РѕР±СЉРµРєС‚Р° shootPoint, РЅР°РїСЂР°РІР»РµРЅРЅС‹Р№ РІ shootPoint.forward
+            // РґР»РёРЅР° Р»СѓС‡Р° 9999 РјРµС‚СЂРѕРІ
+            Gizmos.DrawRay(shootPoint.position, shootPoint.forward * 9999);
         }
-        else
-        {
-            this.gameObject.SetActive(true);
-        }
-        def = Main.GetWeaponDefinition(_type);
-        collarRend.material.color = def.color;
-        lastShotTime = 0; // Сразу после установки _type можно выстрелить
-    }
-
-    public void Fire()
-    {
-        // Если this.gameObject неактивен, выйти
-        if (!gameObject.activeInHierarchy) return;
-        // Если между выстрелами прошло недостаточно мног овремени, выйти
-        if(Time.time - lastShotTime < def.delayBetweenShots)
-        {
-            return;
-        }
-        Projectile p;
-        Vector3 vel = Vector3.up * def.velocity;
-        if(transform.up.y < 0)
-        {
-            vel.y = -vel.y;
-        }
-        switch (type)
-        {
-            case WeaponType.blaster:
-                p = MakeProjectile();
-                p.rigid.velocity = vel;
-                break;
-
-            case WeaponType.spread:
-                p = MakeProjectile(); // Снаряд, летящий прямо
-                p.rigid.velocity = vel;
-                p = MakeProjectile(); // Снаряд, летящий вправо
-                p.transform.rotation = Quaternion.AngleAxis(10, Vector3.back);
-                p.rigid.velocity = p.transform.rotation * vel;
-                p = MakeProjectile(); // Снаряд летящий влево
-                p.transform.rotation = Quaternion.AngleAxis(-10, Vector3.back);
-                p.rigid.velocity = p.transform.rotation * vel;
-                break;
-        }
-    }
-
-    public Projectile MakeProjectile() 
-    {
-        GameObject go = Instantiate<GameObject>(def.projectilePrefab);
-        if(transform.parent.gameObject.tag == "Hero")
-        {
-            go.tag = "ProjectileHero";
-            go.layer = LayerMask.NameToLayer("ProjectileHero");
-        }
-        else
-        {
-            go.tag = "ProjectileEnemy";
-            go.layer = LayerMask.NameToLayer("ProjectileEnemy");
-        }
-        go.transform.position = collar.transform.position;
-        go.transform.SetParent(PROJECTILE_ANCHOR, true);
-        Projectile p = go.GetComponent<Projectile>();
-        p.type = type;
-        lastShotTime = Time.time;
-        return p;
-    }
 }

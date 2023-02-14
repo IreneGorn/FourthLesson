@@ -295,13 +295,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 4671772661074735572}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d8e31c82a1b1a04b911b26fc2f3af03, type: 3}
+  m_Script: {fileID: 11500000, guid: fe60b0fb12e71f042941a5014179a773, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  force: 4
+  force: 20
   damage: 30
   impactPrefab: {fileID: 100002, guid: a0eb5d7a68937af4580f6ad7c62b14d8, type: 3}
   shootPoint: {fileID: 5115785163049209128}
+  spreadConfig: 0.1
 --- !u!1 &4671772661077799242
 GameObject:
   m_ObjectHideFlags: 0
